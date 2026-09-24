@@ -7,20 +7,10 @@ of FRQI similarity, QGSA/Grover exact-pattern search, and hybrid fixed-point sea
 The repository intentionally contains source code and tests, not local environments,
 downloaded dependencies, credentials, build folders, or generated experiment outputs.
 
-See [docs/AI_REPORT_GENERATOR.md](docs/AI_REPORT_GENERATOR.md) for the optional,
-backend-only OpenAI report generator and PDF download workflow.
-
-See
-[docs/CLASSICAL_QUANTUM_SCALING.md](docs/CLASSICAL_QUANTUM_SCALING.md) for the
-Hybrid/Grover theoretical scaling form, formulas, timing assumptions, and
-limitations.
-
-The [QML Clinical Lab user guide](docs/qml-pages-user-guide.md) explains the
-research disease-risk pages and limitations. The [current implementation status](IMPLEMENTATION_STATUS.md),
-[detailed SIH139 feature-gap audit](specs/sih139_feature_gap_and_implementation.md),
-[integration specification](docs/qml-integration-spec.md) and
-[complete local artifact inventory](docs/qml-model-inventory.json) record model reachability, gaps,
-selection and provenance.
+The optional AI report generator runs on the backend; API keys must remain
+server-side. QML and clinical-risk pages are research demonstrations, not
+clinical decision tools. Hybrid and Grover performance claims must be read as
+theoretical estimates or simulator measurements, not quantum advantage.
 
 ## Repository layout
 
@@ -33,8 +23,6 @@ selection and provenance.
 |-- frqi_dna/               FRQI DNA comparison package
 |-- quantum_dna/            Standalone and hybrid quantum experiments
 |-- qml_inference/          Separate Python 3.12 QML inference service and small serving bundle
-|-- docs/                   Implementation documentation
-|-- specs/                  Change specifications and verification records
 `-- scripts/                Windows setup and startup helpers
 ```
 
@@ -63,8 +51,8 @@ Install Python and frontend dependencies:
 .\scripts\setup.ps1
 ```
 
-Open `quantum_search_api\.env` and replace the placeholder email. Add your own NCBI
-API key if available:
+Set your contact email in `quantum_search_api\.env`. Add your own NCBI API key
+if available:
 
 ```env
 NCBI_API_KEY=your_ncbi_api_key
@@ -144,16 +132,14 @@ does not transform unrelated 3D, charting and research pages.
 
 The committed serving bundle contains only the small set of replay-verified
 artifacts needed for runnable demonstrations, plus manifests and deidentified
-benchmark evidence. The FH artifacts are trained only to reproduce declared
-synthetic rules and are not clinical disease-detection models.
-`docs/qml-model-inventory.json`
-catalogues all 213 serialized files found in the sibling `qml-research/` tree,
-including research-only and duplicate files, with hashes. To re-audit or
-promote from the local sibling repository, inspect `scripts/qml_inventory.py`
-and `scripts/promote_qml_models.py`; they check source hashes. Never run
-promotion on untrusted serialized files. Promotion converts the custom UCI
-feature pipeline into a portable dictionary of fitted scikit-learn objects, so
-the service does not import the research package. Do not add raw datasets or participant-level predictions to the portal. Future models need a fitted preprocessing pipeline or deterministic preprocessing contract, estimator/checkpoint, threshold where applicable, schema, recorded benchmark evidence, versioned manifest and an exact replay test before they appear in `/api/qml/v1/models`. The QCNN bundle is promoted by `scripts/promote_qcnn_model.py`; it copies no raw images or row-level predictions and replays five saved test scores.
+benchmark evidence. The FH artifacts reproduce declared synthetic rules and
+are not clinical disease-detection models. The maintenance scripts below can
+inventory and promote trusted research artifacts. Never run promotion on
+untrusted serialized files. Do not add raw datasets or participant-level
+predictions to the portal. Future models need a deterministic preprocessing
+contract, estimator or checkpoint, threshold where applicable, schema,
+benchmark evidence, versioned manifest and an exact replay test before they
+appear in `/api/qml/v1/models`.
 
 QCNN API example:
 
@@ -170,16 +156,18 @@ bun run build
 bunx eslint --rule "prettier/prettier: off" src/components/FhPathway.tsx src/components/ModelRegistry.tsx src/components/QcnnImaging.tsx src/components/QmlPages.tsx src/lib/qml-api.ts src/routes/qml.genomics.fh.tsx
 ```
 
-QML hardware credentials use the same backend-only variable names documented in [`docs/REAL_HARDWARE_EXECUTION.md`](docs/REAL_HARDWARE_EXECUTION.md). Additional QML bounds are `QML_REAL_HARDWARE_MAX_SHOTS` (default 1024) and `QML_HARDWARE_RESULT_TIMEOUT_SECONDS` (default 3600). The portal exposes capability, preview, submission, polling and result routes under `/api/qml/v1/hardware`. Simulator execution does not require credentials.
+QML hardware credentials are backend-only. Additional QML bounds are
+`QML_REAL_HARDWARE_MAX_SHOTS` (default 1024) and
+`QML_HARDWARE_RESULT_TIMEOUT_SECONDS` (default 3600). The portal exposes
+capability, preview, submission, polling and result routes under
+`/api/qml/v1/hardware`. Simulator execution does not require credentials.
 
 The consolidated Vercel deployment is available at
 <https://qml-portal-consolidation.vercel.app>. Vercel Services route the
 TanStack portal and a Python 3.12 container through one origin: genomics uses
 `/api/genomics`, while QML uses `/api/qml/v1`. The container entrypoint is
 `vercel_backend.py`; it keeps the existing API implementations rather than
-duplicating their logic. See
-[`specs/2026-09-24-vercel-full-stack-deployment.md`](specs/2026-09-24-vercel-full-stack-deployment.md)
-for the packaging failure analysis and production verification record.
+duplicating their logic.
 
 The hosted QML adapter provides saved-model inference on the analytic
 simulator. It deliberately does not submit real-hardware jobs. Local startup,
@@ -200,9 +188,13 @@ python -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 bun install --frozen-lockfile
-Copy-Item .env.example .env.local
-Copy-Item quantum_search_api\.env.example quantum_search_api\.env
 ```
+
+The setup script creates local ignored environment files. Set
+`NCBI_DEVELOPER_EMAIL` in `quantum_search_api\.env`; optionally add
+`NCBI_API_KEY`. Public frontend API origins can be set in `.env.local` with
+`VITE_QUANTUM_API_BASE_URL` and `VITE_QML_API_BASE_URL`. Never put secrets in
+`VITE_*` variables.
 
 The root `requirements.txt` installs the backend dependencies and the local
 `qgsa_grover` package in editable mode.
@@ -230,6 +222,33 @@ Optional standalone suites:
 .\.venv\Scripts\python.exe -m pytest quantum_dna\tests -q --disable-warnings
 ```
 
+## Project scripts
+
+Windows helpers (run from the repository root):
+
+- `scripts/setup.ps1` creates the Python environment and installs Python/Bun
+  dependencies, then creates ignored local environment files if missing.
+- `scripts/start-backend.ps1` runs the genomic FastAPI backend on port 8001.
+- `scripts/start-qml-inference.ps1` runs the separate Python 3.12 QML service
+  on port 8010.
+- `scripts/start-frontend.ps1` starts the TanStack/Vite frontend on port 8081.
+
+Research artifact maintenance (requires a trusted local `qml-research` checkout
+and the relevant Python dependencies):
+
+- `scripts/qml_inventory.py <research-root> --output <json-path>` writes an
+  inventory of artifact hashes and aggregate run metadata.
+- `scripts/promote_qml_models.py <research-root> [--output <directory>]`
+  promotes a bounded set of hash-verified tabular QML artifacts.
+- `scripts/promote_qcnn_model.py <research-root> [--output <directory>]`
+  promotes and replay-verifies the BreastMNIST QCNN bundle.
+- `scripts/build_fh_synthetic_models.py` rebuilds synthetic FH
+  rule-reproduction artifacts; it does not train on patient data.
+
+Frontend package commands are `bun run dev`, `bun run build`,
+`bun run build:dev`, `bun run preview`, `bun run lint` and `bun run format`.
+The test commands are listed in Verification above.
+
 ## Functionality
 
 - Landing page and quantum bioinformatics dashboard
@@ -256,8 +275,8 @@ size is deliberately bounded for local simulation.
 - Each collaborator should use their own NCBI contact email and API key.
 - Generated experiment artifacts are written under package `outputs/` directories,
   which are ignored by Git.
-- Real-hardware credentials belong only in `quantum_search_api/.env`; see
-  [`docs/REAL_HARDWARE_EXECUTION.md`](docs/REAL_HARDWARE_EXECUTION.md).
+- Real-hardware credentials belong only in `quantum_search_api/.env` and must
+  never be committed.
 - For a Vercel frontend, set `VITE_QUANTUM_API_BASE_URL` in Vercel to the
   Render service URL. Set `QDNA_CORS_ORIGINS` in Render to the exact Vercel
   origin, such as `https://your-project.vercel.app` (without a trailing slash).

@@ -19,10 +19,20 @@ try {
     bun install --frozen-lockfile
 
     if (-not (Test-Path -LiteralPath ".env.local")) {
-        Copy-Item -LiteralPath ".env.example" -Destination ".env.local"
+        @(
+            "VITE_QUANTUM_API_BASE_URL=http://127.0.0.1:8001"
+            "VITE_QML_API_BASE_URL=http://127.0.0.1:8010"
+        ) | Set-Content -LiteralPath ".env.local" -Encoding ascii
     }
     if (-not (Test-Path -LiteralPath "quantum_search_api\.env")) {
-        Copy-Item -LiteralPath "quantum_search_api\.env.example" -Destination "quantum_search_api\.env"
+        @(
+            "NCBI_API_KEY="
+            "NCBI_TOOL_NAME=quantum_helix_lab"
+            "NCBI_DEVELOPER_EMAIL="
+            "NCBI_REQUEST_TIMEOUT_SECONDS=30"
+            "NCBI_MAX_RETRIES=3"
+            "NCBI_CACHE_TTL_SECONDS=86400"
+        ) | Set-Content -LiteralPath "quantum_search_api\.env" -Encoding ascii
     }
 
     Write-Host ""

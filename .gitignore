@@ -1,12 +1,18 @@
 # Secrets and machine-specific configuration
 .env
 .env.*
-!.env.example
 **/.env
 **/.env.*
-!**/.env.example
+**/.env.example
 .dev.vars
 *.local
+
+# Local planning, documentation, and generated/cache artifacts
+**/specs/
+**/docs/
+**/cacheResults/
+**/AGENTS.md
+**/IMPLEMENTATION_STATUS.md
 
 # Python environments and runtime files
 .venv/
