@@ -1,0 +1,2 @@
+-r quantum_search_api/requirements.txt
+-e ./qgsa_grover

@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qgsa-grover"
+version = "0.1.0"
+description = "Standalone Qiskit implementation of the Grover/QGSA DNA exact-pattern search paper"
+requires-python = ">=3.10"
+dependencies = ["qiskit>=2.0", "qiskit-aer>=0.15", "matplotlib>=3.8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,17 @@
+.env
+.env.local
+.output
+.tanstack
+.venv
+.venv-qml
+.wrangler
+logs
+node_modules
+/pyproject.toml
+/requirements.txt
+**/__pycache__
+**/*.pyc
+**/tests
+architects_qml_models
+docs
+specs

@@ -1,0 +1,112 @@
+{
+  "files": {
+    "evidence.json": {
+      "bytes": 52071,
+      "sha256": "f73bcdbe1a2abf8c7de74ccf7d8c70edb6637dc14b3ac79f36a357e20d05b09d",
+      "source": "existing deidentified evidence plus QCNN live-serving status",
+      "sourceSha256": "f73bcdbe1a2abf8c7de74ccf7d8c70edb6637dc14b3ac79f36a357e20d05b09d"
+    },
+    "framingham/angle_qksvm_pca2/calibrator.joblib": {
+      "bytes": 879,
+      "sha256": "c73b9ac025f2b14c273178113918220a2ddc46fbff1d014d0de4b16e2030dc29",
+      "source": "results/framingham/framingham-audited-20260909/seed-11/angle_qksvm_pca2/calibrator.joblib",
+      "sourceSha256": "c73b9ac025f2b14c273178113918220a2ddc46fbff1d014d0de4b16e2030dc29"
+    },
+    "framingham/angle_qksvm_pca2/svm.joblib": {
+      "bytes": 5691,
+      "sha256": "2d9abb56a396a20048233e934fcdd4765b08efd853b3f81a59fc6c9342706dac",
+      "source": "results/framingham/framingham-audited-20260909/seed-11/angle_qksvm_pca2/svm.joblib",
+      "sourceSha256": "2d9abb56a396a20048233e934fcdd4765b08efd853b3f81a59fc6c9342706dac"
+    },
+    "framingham/angle_qksvm_pca2/training_states.npz": {
+      "bytes": 8682,
+      "sha256": "cdbb272d19677301b983eebf183140e00160c058e782b730407e2685e35dd73f",
+      "source": "results/framingham/framingham-audited-20260909/seed-11/angle_qksvm_pca2/training_states.npz",
+      "sourceSha256": "cdbb272d19677301b983eebf183140e00160c058e782b730407e2685e35dd73f"
+    },
+    "framingham/logistic_pca2/calibrator.joblib": {
+      "bytes": 879,
+      "sha256": "65b4950b356f4348f1d2956480ff9da02b8c03287ae4558c30424fa64f1b3f77",
+      "source": "results/framingham/framingham-audited-20260909/seed-11/logistic_pca2/calibrator.joblib",
+      "sourceSha256": "65b4950b356f4348f1d2956480ff9da02b8c03287ae4558c30424fa64f1b3f77"
+    },
+    "framingham/logistic_pca2/model.joblib": {
+      "bytes": 879,
+      "sha256": "df82cc85cf23918ebb2d8bcfa548baea685ef5fd81c567bfbe759eaba41de7c0",
+      "source": "results/framingham/framingham-audited-20260909/seed-11/logistic_pca2/model.joblib",
+      "sourceSha256": "df82cc85cf23918ebb2d8bcfa548baea685ef5fd81c567bfbe759eaba41de7c0"
+    },
+    "framingham/pca2_pipeline.joblib": {
+      "bytes": 3393,
+      "sha256": "9548c10f8f0b5bb18968d66be911442308e355af84bf87bd02750fe75484dec2",
+      "source": "results/framingham/framingham-audited-20260909/seed-11/pca2_pipeline.joblib",
+      "sourceSha256": "9548c10f8f0b5bb18968d66be911442308e355af84bf87bd02750fe75484dec2"
+    },
+    "qcnn/breastmnist/checkpoint.pt": {
+      "bytes": 4603,
+      "sha256": "96b798f1a5f7e91a07aa91c423548f6dcd53f8cd65d7ba8512e988e33aaa94b4",
+      "source": "results/qcnn_breast_cancer/runs/e77cc845e586cfdd/checkpoint.pt",
+      "sourceSha256": "96b798f1a5f7e91a07aa91c423548f6dcd53f8cd65d7ba8512e988e33aaa94b4"
+    },
+    "qcnn/breastmnist/serving-weights.json": {
+      "bytes": 1347,
+      "sha256": "0a204d0113d7a4cd871e9f8b71f87db7871b63745be5e05d8d27f8d04f8ee2a9",
+      "source": "deployment-safe numeric export of checkpoint.pt model_state and serving metadata",
+      "sourceSha256": "96b798f1a5f7e91a07aa91c423548f6dcd53f8cd65d7ba8512e988e33aaa94b4"
+    },
+    "qcnn/breastmnist/serving.json": {
+      "bytes": 2150,
+      "sha256": "bb6e2b39b9138b7790f38b2651f4a9863357028a2733b5cc0133962d693ec58a",
+      "source": "derived from results/qcnn_breast_cancer/runs/e77cc845e586cfdd/record.json and results/qcnn_breast_cancer/runs/e77cc845e586cfdd/resolved_config.json",
+      "sourceSha256": "bb6e2b39b9138b7790f38b2651f4a9863357028a2733b5cc0133962d693ec58a"
+    },
+    "qcnn/breastmnist/verification.json": {
+      "bytes": 330,
+      "sha256": "984d44c1c5029fa109638b5bff08374b4112dea9f3260f976cffe265f816631c",
+      "source": "replay of results/qcnn_breast_cancer/runs/e77cc845e586cfdd/predictions.csv against data/raw/medmnist/breastmnist.npz",
+      "sourceSha256": "984d44c1c5029fa109638b5bff08374b4112dea9f3260f976cffe265f816631c"
+    },
+    "uci/rbf_svm.joblib": {
+      "bytes": 6811,
+      "sha256": "0ffda1d24e7a39f64d6deec0d671ce63687f9837153c80c78ec16721b2b0b786",
+      "source": "results/ehr_ihd_qml/uci-smoke-20260829T194302Z-3b55c98a85f0/models/rbf_svm.joblib",
+      "sourceSha256": "0ffda1d24e7a39f64d6deec0d671ce63687f9837153c80c78ec16721b2b0b786"
+    },
+    "uci/rbf_svm_platt.joblib": {
+      "bytes": 879,
+      "sha256": "59ecdd4751d1220fa694f87d876e17fba863eeca037766d9723cff1fdb2bdca1",
+      "source": "results/ehr_ihd_qml/uci-smoke-20260829T194302Z-3b55c98a85f0/calibration/rbf_svm_platt.joblib",
+      "sourceSha256": "59ecdd4751d1220fa694f87d876e17fba863eeca037766d9723cff1fdb2bdca1"
+    },
+    "uci/selected_pipeline.joblib": {
+      "bytes": 1393,
+      "sha256": "4dbf480ca2a08854ab2dcd1a41fbfd83d3c2c078451b83e0cba38ca825d55589",
+      "source": "results/ehr_ihd_qml/uci-smoke-20260829T194302Z-3b55c98a85f0/preprocessing/selected_pipeline.joblib",
+      "sourceSha256": "831608489ac5fbfe14ca92c5f9df1818b05d0d7698285bfaf8fb53d7e628de08"
+    }
+  },
+  "framinghamRun": "framingham-audited-20260909",
+  "framinghamSeed": 11,
+  "python": "3.12",
+  "qcnnRun": "e77cc845e586cfdd",
+  "researchEnvironment": {
+    "kernel_execution": "cached exact statevectors; no QPU jobs",
+    "numpy": "2.5.2",
+    "pennylane": "0.45.1",
+    "physical_memory_gb": 7.679180145263672,
+    "python": "3.12.7",
+    "sklearn": "1.9.0",
+    "torch": "2.13.0+cpu"
+  },
+  "schemaVersion": 1,
+  "selection": {
+    "framinghamMatchedClassical": "logistic_pca2",
+    "framinghamQuantum": "angle_qksvm_pca2",
+    "qcnn": "breastmnist-qcnn",
+    "uciClassical": "rbf_svm",
+    "uciReason": "Highest saved smoke-run AUPRC among UCI classical models; evidence is descriptive only."
+  },
+  "sourceRepository": "qml-research",
+  "uciRun": "uci-smoke-20260829T194302Z-3b55c98a85f0",
+  "version": "2026-09-22-qcnn-1"
+}

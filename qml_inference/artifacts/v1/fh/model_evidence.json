@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "experiment": "synthetic_fh_rule_reproduction",
+  "seed": 26139,
+  "trainCount": 240,
+  "testCount": 120,
+  "positiveTrainCount": 121,
+  "positiveTestCount": 65,
+  "primaryMetric": "auprc",
+  "featureOrder": [
+    "untreated_ldl_c_mg_dl",
+    "genomic_evidence_strength",
+    "family_history_signal",
+    "phenotype_signal"
+  ],
+  "models": [
+    {
+      "model": "fh_logistic_rule_reproduction",
+      "family": "classical",
+      "auprc": 0.979175304373431,
+      "auroc": 0.9748251748251747,
+      "balanced_accuracy": 0.8685314685314685
+    },
+    {
+      "model": "fh_angle_qksvm_rule_reproduction",
+      "family": "quantum_kernel",
+      "qubits": 4,
+      "kernelMethod": "exact_statevector_fidelity",
+      "auprc": 0.9955338605336288,
+      "auroc": 0.9946853146853147,
+      "balanced_accuracy": 0.9587412587412587
+    }
+  ],
+  "limitation": "Metrics measure reproduction of synthetic referral rules, not FH detection or clinical validity."
+}

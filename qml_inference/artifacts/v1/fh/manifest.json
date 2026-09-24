@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "version": "synthetic-fh-v1",
+  "seed": 26139,
+  "files": {
+    "feature_scaler.joblib": {
+      "sha256": "9b8d1394f98aff9429a5a4489cfe1b8fa1e7a99783f7e919771689e727f75620",
+      "bytes": 679
+    },
+    "logistic_rule_reproduction.joblib": {
+      "sha256": "a85983aac8c2147158c6d57d02d42701b159e95ce0a7b593f17473e58d290d18",
+      "bytes": 895
+    },
+    "angle_qksvm_rule_reproduction.joblib": {
+      "sha256": "580d31d17cecf706865830b1c150f5e9493c2129d5543a9bb3f965038d52fc80",
+      "bytes": 3003
+    },
+    "angle_qksvm_training_states.npz": {
+      "sha256": "5633a77b319e7037a8c47825bdbfbae59db2a1dda72d65fc893f150406be8910",
+      "bytes": 29677
+    },
+    "model_evidence.json": {
+      "sha256": "9b55d10b915d7458e15e2ec8932e67712aca9aa27273fe839eb938db5c79ef42",
+      "bytes": 1015
+    },
+    "evidence_snapshot.json": {
+      "sha256": "b36f29e87339d3a90c0589cda19e21cb089f916d71dfab91163e389fad1d4d69",
+      "bytes": 1880
+    }
+  }
+}

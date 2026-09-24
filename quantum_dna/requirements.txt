@@ -1,0 +1,7 @@
+qiskit>=2.5,<3
+qiskit-aer>=0.17,<1
+matplotlib>=3.10
+pytest>=9
+# Optional real-hardware preparation:
+# qiskit-ibm-runtime
+# qbraid (only needed for device discovery/submission; QASM3 export is local)

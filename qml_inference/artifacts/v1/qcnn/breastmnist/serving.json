@@ -1,0 +1,86 @@
+{
+  "architecture": {
+    "convolution": "su4_ising",
+    "encoding": "angle_ry",
+    "identifier": "hierarchical_qcnn_su4_ising_unitary_controlled_v1",
+    "pooling": "unitary_controlled",
+    "qubits": 4,
+    "stages": 2
+  },
+  "input": {
+    "channels": "grayscale",
+    "formats": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "maxBytes": 5242880,
+    "resize": "bilinear",
+    "shape": [
+      28,
+      28,
+      1
+    ]
+  },
+  "modelId": "breastmnist-qcnn",
+  "output": {
+    "calibrated": false,
+    "negativeClass": 0,
+    "negativeLabel": "normal_or_benign",
+    "positiveClass": 1,
+    "positiveLabel": "malignant",
+    "score": "sigmoid(logit)",
+    "threshold": 0.4121575951576233
+  },
+  "preprocessing": {
+    "angleFormula": "pi * (2 * pooled_intensity/255 - 1)",
+    "angleRange": [
+      -3.141592653589793,
+      3.141592653589793
+    ],
+    "fittedStateRequired": false,
+    "grid": [
+      2,
+      2
+    ],
+    "pixelDivisor": 255.0,
+    "reducedFeatures": 4,
+    "reducer": "spatial_pool",
+    "regionShape": [
+      14,
+      14
+    ]
+  },
+  "quantum": {
+    "activeQubits": "4 \u2192 2 \u2192 1",
+    "circuitDepth": 38,
+    "measurement": "PauliZ expectation on the final active qubit",
+    "qubits": 4,
+    "shots": null,
+    "stages": 2,
+    "totalGates": 94,
+    "twoQubitGates": 24
+  },
+  "research": {
+    "datasetVersion": "3.0.2",
+    "epochs": 2,
+    "evidenceWarning": "Smoke run trained on 32 images for two epochs with weak held-out discrimination; not clinically validated.",
+    "metrics": {
+      "accuracy": 0.34375,
+      "auprc": 0.2322697404934247,
+      "auroc": 0.34782608695652173,
+      "balanced_accuracy": 0.5096618357487922,
+      "f1": 0.43243243243243246,
+      "mcc": 0.02627034687463669,
+      "sensitivity": 0.8888888888888888,
+      "specificity": 0.13043478260869565
+    },
+    "profile": "smoke",
+    "seed": 7,
+    "sourceCommit": "77c82e9acb484441c75e8fa66d75cf969b4ccf29",
+    "testSize": 32,
+    "trainSize": 32,
+    "validationSize": 16
+  },
+  "runId": "e77cc845e586cfdd",
+  "schemaVersion": 1
+}

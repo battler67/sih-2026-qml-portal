@@ -1,0 +1,22 @@
+[project]
+name = "qdna-vercel-services"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.135",
+  "httpx>=0.28,<1",
+  "joblib>=1.5,<2",
+  "numpy==2.5.2",
+  "pandas==2.3.3",
+  "pennylane==0.45.1",
+  "pillow==12.3.0",
+  "pydantic>=2.12",
+  "python-dotenv>=1.2",
+  "qbraid>=0.12,<1",
+  "qgsa-grover @ file:./qgsa_grover",
+  "qiskit>=2.5,<3",
+  "qiskit-aer>=0.17,<1",
+  "qiskit-ibm-runtime>=0.47,<1",
+  "scikit-learn==1.9.0",
+  "torch==2.13.0",
+]

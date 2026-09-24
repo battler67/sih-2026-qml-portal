@@ -1,0 +1,11 @@
+{
+  "dataset": "BreastMNIST 3.0.2 official test split",
+  "datasetMd5": "750601b1f35ba3300ea97c75c52ff8f6",
+  "maxAbsoluteScoreError": 2.7346502173841714e-08,
+  "participantLevelOutputsStored": false,
+  "passed": true,
+  "replayedSamples": 5,
+  "runId": "e77cc845e586cfdd",
+  "schemaVersion": 1,
+  "tolerance": 1e-07
+}

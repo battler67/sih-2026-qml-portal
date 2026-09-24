@@ -1,0 +1,555 @@
+You are working inside my existing quantum DNA-search project. The application already has three quantum search modes:
+
+1. FRQI
+2. Grover/QGSA
+3. YLC algorithm
+
+The frontend already has a `quantum-search-results` page where the results of the selected algorithm are displayed.
+
+Your task is to implement optional noise simulation for all three modes and show an ideal-versus-noisy comparison when the user clicks an **Add Noise** button.
+
+## Main objective
+
+Add an **Add Noise** button to the `quantum-search-results` page.
+
+When the button is clicked:
+
+* Do not rerun or overwrite the original ideal result.
+* Run the same selected quantum circuit using its assigned noise model.
+* Display the ideal and noisy results side by side.
+* Preserve the current UI design, CSS conventions, spacing, colors and component structure.
+* Do not disturb existing search execution or navigation.
+* Use the existing backend/frontend architecture instead of creating a separate standalone application.
+
+## Noise model required for each algorithm
+
+### 1. FRQI mode
+
+Use a noise model representing **rotation and controlled-gate errors**.
+
+Reason:
+
+FRQI encodes DNA or image information using parameterized rotation gates, especially controlled `RY` rotations. Small gate inaccuracies modify the encoded amplitudes.
+
+Preferred implementation:
+
+* Add a small coherent over-rotation or depolarizing error to `ry`, `u`, `cx` or the actual basis gates produced after transpilation.
+* Ensure the noise is attached to gates that actually exist in the transpiled FRQI circuit.
+* Use a realistic but visible error rate.
+* Avoid using an error rate so large that the output becomes completely random.
+
+Suggested starting values:
+
+```python
+single_qubit_error = 0.002
+two_qubit_error = 0.01
+```
+
+Preferred mitigation:
+
+* Transpile with `optimization_level=3`.
+* Compare the optimized noisy result against the ideal result.
+* Report original and transpiled circuit depth and `CX` count.
+
+### 2. Grover/QGSA mode
+
+Use **two-qubit depolarizing noise**.
+
+Reason:
+
+The Grover oracle and diffuser contain many controlled and multi-controlled operations. After decomposition, these become multiple `CX` gates, so two-qubit gate noise is the most relevant.
+
+Suggested starting values:
+
+```python
+single_qubit_error = 0.001
+two_qubit_error = 0.015
+```
+
+Apply the strongest noise to `cx` or the transpiled two-qubit basis gate.
+
+Preferred mitigation:
+
+Implement a lightweight form of **zero-noise extrapolation** for the main success metric.
+
+Run the noisy circuit using at least these effective noise scale factors:
+
+```text
+1x, 2x, 3x
+```
+
+For each factor:
+
+* Scale the depolarizing error probabilities safely.
+* Run the same circuit with the same number of shots.
+* Extract the probability of the expected target index or total valid target states.
+
+Estimate the zero-noise probability using a simple linear or quadratic fit.
+
+Return:
+
+* Ideal target probability
+* Raw noisy target probability at 1x
+* Mitigated or extrapolated target probability
+* False-positive probability
+* Noise scale results
+
+Do not apply ZNE separately to every output state unless the current architecture already supports it. Apply it mainly to the selected success metric.
+
+### 3. YLC mode
+
+Use **measurement/readout noise**.
+
+Reason:
+
+The YLC result is determined from measured output bitstrings, so incorrect `0 → 1` and `1 → 0` measurements directly affect the final result.
+
+Suggested starting readout matrix:
+
+```python
+ReadoutError([
+    [0.97, 0.03],
+    [0.04, 0.96]
+])
+```
+
+Preferred mitigation:
+
+Implement readout-error mitigation.
+
+A simple acceptable approach is:
+
+* Build the single-qubit assignment matrix.
+* Extend it for the measured register using tensor products or independent local correction.
+* Correct the noisy output probability vector.
+* Clip negative corrected probabilities to zero.
+* Renormalize the corrected distribution.
+
+Return:
+
+* Ideal distribution
+* Raw noisy distribution
+* Mitigated distribution
+* Correct-answer probability before and after mitigation
+
+Use Qiskit Experiments readout mitigation only when it is already installed and compatible. Otherwise implement a small local assignment-matrix correction without introducing a heavy dependency.
+
+## Backend requirements
+
+Find the existing execution path for all three modes before changing anything.
+
+Trace the flow from:
+
+```text
+Frontend quantum-search-results page
+        ↓
+Search API or service
+        ↓
+Search orchestrator
+        ↓
+FRQI / Grover-QGSA / YLC execution modules
+        ↓
+Simulation result
+```
+
+Do not duplicate circuit-building logic.
+
+Refactor only when necessary so that the same already-built circuit can be executed through:
+
+```python
+run_ideal(circuit, ...)
+run_noisy(circuit, algorithm, ...)
+```
+
+or a similar clean interface.
+
+Create a central noise service, for example:
+
+```text
+services/noise/
+    noise_models.py
+    noise_runner.py
+    mitigation.py
+```
+
+Use the actual project naming conventions if a better location already exists.
+
+The central service should expose functionality similar to:
+
+```python
+build_frqi_noise_model()
+build_grover_noise_model(scale_factor=1.0)
+build_ylc_readout_noise_model()
+
+run_noisy_simulation(
+    circuit,
+    algorithm,
+    shots,
+    expected_states=None
+)
+```
+
+Do not hardcode algorithm-specific circuit construction inside the noise service.
+
+## API requirements
+
+Add or extend an API endpoint that accepts the existing search result context and selected algorithm.
+
+Preferred request structure:
+
+```json
+{
+  "algorithm": "frqi",
+  "shots": 8192,
+  "search_id": "existing-result-id",
+  "target_sequence": "...",
+  "pattern_sequence": "...",
+  "expected_indices": [2]
+}
+```
+
+Use the existing result ID or request state where possible.
+
+Do not trust the frontend to send calculated ideal metrics. The backend should use the stored result or rerun the existing ideal execution only when necessary.
+
+A possible endpoint is:
+
+```text
+POST /api/quantum-search/add-noise
+```
+
+or an endpoint consistent with the current API structure.
+
+Return a structured response similar to:
+
+```json
+{
+  "algorithm": "grover",
+  "noise_type": "two_qubit_depolarizing",
+  "mitigation": "zero_noise_extrapolation",
+  "shots": 8192,
+  "ideal": {
+    "counts": {},
+    "probabilities": {},
+    "success_probability": 0.94,
+    "false_positive_probability": 0.02
+  },
+  "noisy": {
+    "counts": {},
+    "probabilities": {},
+    "success_probability": 0.71,
+    "false_positive_probability": 0.17
+  },
+  "mitigated": {
+    "probabilities": {},
+    "success_probability": 0.84,
+    "false_positive_probability": 0.08
+  },
+  "circuit_metrics": {
+    "original_depth": 0,
+    "transpiled_depth": 0,
+    "original_size": 0,
+    "transpiled_size": 0,
+    "cx_count": 0
+  },
+  "noise_parameters": {
+    "single_qubit_error": 0.001,
+    "two_qubit_error": 0.015
+  }
+}
+```
+
+Fields may differ according to the current project, but keep one consistent response shape across the three algorithms.
+
+## Frontend requirements
+
+Locate the existing `quantum-search-results` component or page.
+
+Add an **Add Noise** button near the existing result actions.
+
+Button behavior:
+
+1. Initially show:
+
+```text
+Add Noise
+```
+
+2. While processing:
+
+```text
+Running noisy simulation...
+```
+
+4. On success, display three result sections:
+
+```text
+Ideal
+Noisy
+Mitigated
+```
+
+6. Do not remove the existing ideal result UI.
+
+7. Reuse the existing chart components where possible.
+
+8. Preserve the existing responsive design.
+
+Recommended comparison cards:
+
+```text
+Correct-result probability
+False-positive probability
+Top measured state
+Circuit depth
+Two-qubit gate count
+Noise type
+Mitigation method
+```
+
+Also display a probability comparison chart:
+
+```text
+Ideal vs Noisy vs Mitigated
+```
+
+For Grover, show target-index probabilities.
+
+For FRQI, show the relevant similarity or strip-qubit probability.
+
+For YLC, show measured output-state probabilities.
+
+Clearly label that the noisy result is generated using Qiskit Aer simulation and is not a real hardware run.
+
+## State handling
+
+The noisy result must remain associated with the currently displayed search result.
+
+When the user changes:
+
+* algorithm,
+* target sequence,
+* pattern sequence,
+* search job,
+* selected result,
+
+clear the old noisy comparison so results from different searches are never mixed.
+
+
+Show readable frontend error messages without exposing raw stack traces.
+
+## Qiskit implementation requirements
+
+
+Only import APIs that are actually available in the installed Qiskit version.
+
+Before coding:
+
+1. Inspect installed Qiskit and Qiskit Aer versions.
+2. Check current imports and simulation style.
+3. Do not assume old APIs such as deprecated `execute`.
+4. Prefer:
+
+```python
+transpiled = transpile(circuit, simulator, optimization_level=3)
+result = simulator.run(transpiled, shots=shots).result()
+```
+
+Use deterministic simulator seeds where useful so that demo comparisons remain reproducible:
+
+```python
+seed_simulator = 42
+seed_transpiler = 42
+```
+
+Use the same number of shots for ideal and noisy sampled simulations.
+
+## Correct comparison rules
+
+The ideal and noisy circuits must represent the same logical circuit.
+
+Use the same:
+
+* input sequences,
+* algorithm,
+* oracle,
+* Grover iteration count,
+* measured registers,
+* shots,
+* expected result interpretation.
+
+Do not compare a statevector probability from one circuit against counts from a different circuit without clearly converting both to the same probability format.
+
+Normalize bit ordering consistently.
+
+Document whether Qiskit classical-bit order is reversed before mapping bitstrings to DNA indices.
+
+## Performance requirements
+
+Noise simulation can be expensive.
+
+Therefore:
+
+* Do not automatically run noisy simulation during every normal search.
+* Run it only when the user clicks **Add Noise**.
+* Cache the noisy result using the search result ID and algorithm where safe.
+* Set reasonable qubit and depth limits.
+* Return a clear warning when density-matrix simulation is too large.
+* Prefer shot-based Aer simulation for larger circuits.
+* Do not block or break the existing ideal search flow.
+
+## Tests required
+
+Add tests for:
+
+### Backend
+
+* FRQI noise model attaches errors to existing transpiled gates.
+* Grover noisy success probability differs from the ideal result.
+* ZNE returns a finite probability between 0 and 1.
+* YLC readout correction returns a normalized distribution.
+* Noise endpoint rejects invalid algorithms.
+* Noise response follows a consistent schema.
+* Existing ideal-search tests continue to pass.
+
+### Frontend
+
+* Add Noise button appears.
+* Clicking the button calls the correct endpoint.
+* Loading state appears.
+* Ideal, noisy and mitigated values render correctly.
+* Errors render correctly.
+* Old noise results clear when the selected search result changes.
+
+Use the project’s existing testing framework.
+
+## Documentation requirement
+
+Create a Markdown file at a suitable location, preferably:
+
+```text
+docs/QUANTUM_NOISE_IMPLEMENTATION.md
+```
+
+The Markdown file must include:
+
+### 1. Overview
+
+Explain why optional noise simulation was added.
+
+### 2. Algorithm-to-noise mapping
+
+Include this table:
+
+| Algorithm   | Noise model                        | Why relevant                                             | Mitigation               |
+| ----------- | ---------------------------------- | -------------------------------------------------------- | ------------------------ |
+| FRQI        | Rotation and controlled-gate error | FRQI information is encoded through controlled rotations | Circuit optimization     |
+| Grover/QGSA | Two-qubit depolarizing error       | Oracle and diffuser decompose into many two-qubit gates  | Zero-noise extrapolation |
+| YLC         | Readout error                      | Final result depends strongly on measured bitstrings     | Readout-error mitigation |
+
+### 3. Execution flow
+
+Document:
+
+```text
+User clicks Add Noise
+        ↓
+Frontend sends noise request
+        ↓
+Backend loads or reconstructs the same circuit
+        ↓
+Ideal simulation remains unchanged
+        ↓
+Algorithm-specific noise model is applied
+        ↓
+Mitigation is applied
+        ↓
+Ideal, noisy and mitigated results are returned
+        ↓
+Comparison is rendered on quantum-search-results
+```
+
+### 5. Exact noise insertion points
+
+For each algorithm document:
+
+* File path
+* Function name
+* Circuit gates receiving noise
+* Error probability
+* Simulator method
+* Mitigation function
+* Result fields returned
+
+### 6. API documentation
+
+Include request and response examples.
+
+
+
+
+## Code-quality requirements
+
+* Follow the current project architecture.
+* Use type hints in Python.
+* Use existing TypeScript interfaces on the frontend.
+* Avoid large unrelated refactors.
+* Avoid duplicated noise logic.
+* Keep noise parameters configurable in one place.
+* Do not modify existing algorithm mathematics unless required for simulator compatibility.
+* Do not silently change current result interpretation.
+* Do not delete any current functionality.
+
+## Final response format
+
+After implementation, give me a report with these sections:
+
+```text
+1. Root architecture discovered
+2. Files created
+3. Files modified
+4. FRQI noise implementation
+5. Grover/QGSA noise implementation
+6. YLC noise implementation
+7. Frontend Add Noise flow
+8. API request and response
+9. Tests executed
+10. Test results
+11. Known limitations
+12. Documentation file path
+```
+
+For every modified file, mention the exact function, class or component changed.
+
+Also include a brief manual test procedure:
+
+```text
+1. Run a normal quantum search.
+2. Open quantum-search-results.
+3. Confirm the ideal output is shown.
+4. Click Add Noise.
+5. Confirm the loading state.
+6. Confirm Ideal, Noisy and Mitigated sections appear.
+7. Verify the values and chart correspond to the selected algorithm.
+8. Change the search result and verify the previous noisy comparison is cleared.
+```
+ Then implement the smallest safe set of changes required.
+
+ implement this as in humanly way , it should not be detectedin plagarism ,
+  do not write code so readably , implement the functionalities aas i human would do without any
+  errors .Document the results in one clean md file . Write the documentation in short and precise way i
+  can understand m if i have doubts in documentation  i will ask .final response format is optional .code
+  quality is humanly .After user clicks add noise button in results page show unnoisy vs noisy vs mitigated
+  noisy parameters visually in results page itsel at last.For do not need 6.API documentation .Only
+  algorithm to noisy mapping is must .Remaning say me what sections you implemented.
+
+
+
+  The correct fix would be to make Estimate metadata-only: calculate circuit resources immediately
+    from query length and configured window limits without downloading complete genomes. Actual
+  genome
+    retrieval should happen only after Run Search is clicked. yeah implement this , estimate should
+  give me also expected time also ,estimate should show only resources needed only no fetching ,
+  move the logic of retrieving genomic reocrds etc to results page loading, during results page
+  loading you can complete them , implement this very  very carefully i do not want my website to
+  loose its functinality.

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "synthetic-fh-evidence-v1",
+  "sourceType": "synthetic_educational",
+  "createdAt": "2026-09-21",
+  "referenceBuild": "not_applicable",
+  "genes": ["LDLR", "APOB", "PCSK9"],
+  "limitations": [
+    "Every record is synthetic and must not be interpreted as a real ClinVar assertion.",
+    "This snapshot demonstrates evidence handling, uncertainty and provenance only.",
+    "A negative or uncertain record does not exclude familial hypercholesterolemia."
+  ],
+  "records": [
+    {
+      "id": "SYNTHETIC_LDLR_001",
+      "gene": "LDLR",
+      "condition": "familial hypercholesterolemia",
+      "classification": "pathogenic",
+      "reviewStatus": "synthetic_expert_panel_equivalent",
+      "modeOfInheritance": "semidominant"
+    },
+    {
+      "id": "SYNTHETIC_APOB_001",
+      "gene": "APOB",
+      "condition": "familial hypercholesterolemia",
+      "classification": "likely_pathogenic",
+      "reviewStatus": "synthetic_multi_submitter_equivalent",
+      "modeOfInheritance": "autosomal_dominant"
+    },
+    {
+      "id": "SYNTHETIC_PCSK9_001",
+      "gene": "PCSK9",
+      "condition": "familial hypercholesterolemia",
+      "classification": "pathogenic",
+      "reviewStatus": "synthetic_expert_panel_equivalent",
+      "modeOfInheritance": "autosomal_dominant_gain_of_function"
+    },
+    {
+      "id": "SYNTHETIC_LDLR_VUS_001",
+      "gene": "LDLR",
+      "condition": "familial hypercholesterolemia",
+      "classification": "uncertain_significance",
+      "reviewStatus": "synthetic_single_submitter_equivalent",
+      "modeOfInheritance": "unknown"
+    },
+    {
+      "id": "SYNTHETIC_LDLR_BENIGN_001",
+      "gene": "LDLR",
+      "condition": "familial hypercholesterolemia",
+      "classification": "benign",
+      "reviewStatus": "synthetic_expert_panel_equivalent",
+      "modeOfInheritance": "not_applicable"
+    }
+  ]
+}
